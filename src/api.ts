@@ -1,4 +1,4 @@
-import { getBackendSrv } from '@grafana/runtime';
+import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import cache from 'memory-cache';
 
 export default class Api {
@@ -19,7 +19,10 @@ export default class Api {
   async get(params: string) {
     const allParams = new URLSearchParams('?' + this.params);
     new URLSearchParams('?' + params).forEach((value, key) => {
-      allParams.set(key, value);
+      const replacedValue = getTemplateSrv()
+        .replace(value)
+        .toLowerCase();
+      allParams.set(key, replacedValue);
     });
 
     const req = {
